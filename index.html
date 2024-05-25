@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+   
+
+<div class="all-container">
+
+    <div class="chat-container">
+
+        <div class="app">
+    
+            <!-- when user tries to join sa room  -->
+            <div class="screen join-screen  active ">
+                <div class="front-page"></div>
+                <div class="form">
+                    <h2>Join chat room</h2>
+                    <div class="form-input">
+                        <label for="">Username</label>
+                        <input type="text"  id="username">
+                        <div class="alert inactive">Name must be less than 10 characters</div>
+                    </div>
+                    <div class="form-input">
+                        <button id="join-user">Join</button>
+                    </div>
+                </div>
+            </div>
+           <!-- user joining complete -->
+    
+    
+    
+    <!-- where user can chat -->
+            <div class=" screen chat-screen  ">
+                <div class="header">
+                    <div class="logo">Chatroom</div>
+                    <button id="exit-chat">Members</button>
+                    <ul id="user-list" class="inactive">
+                        <div>a</div>
+                        <div>b</div>
+                        <div>c</div>
+                    </ul>
+                    
+                </div>
+               
+    
+                <!-- all messages here -->
+                <div class="messages">
+                    
+                    
+                    <!-- <div class="message my-message">
+                        <div>
+                            <div class="name">You</div>
+                            <div class="text">Hi</div>
+                        </div>
+                    </div>
+                    -->
+                    
+                    
+    
+                    <div class="update">Chats are end-to-end not encrypted </div>
+                    <div class="update">Chat at your own risk </div>
+    
+    
+    
+    
+                    <!-- <div class="message other-message">
+                        <div>
+                            <div class="name">ABC</div>
+                            <div class="text">Hi</div>
+                        </div>
+                    </div> -->
+                </div>
+    
+                <div class="typebox">
+                    <input type="text" id="message-input" placeholder="Message...">
+                    <button id="send-message">Send</button>
+                </div>
+    
+    
+    
+            </div>
+        </div>
+    </div>
+
+    <!-- canvas to draw -->
+    <div class="canvas-container ">
+            <section class="drawing-board">
+                <canvas id="canvas"></canvas>
+            </section>
+        </div>
+
+
+<!-- inactive class has to be added in canvas container -->
+    <div class="tools-container inactive">
+        <div class="container ">
+
+            <section class="tools-board">
+                <div class="row">
+                    <label for="" class="title">Shapes</label>
+                    <ul class="options">
+                        <li class="option">
+                            <img src="" alt=".">
+                            <span>Rectangle</span>
+                        </li>
+                        <li class="option">
+                            <img src="" alt=".">
+                            <span>Circle</span>
+                        </li>
+                        <li class="option">
+                            <img src="" alt=".">
+                            <span>Trianlge</span>
+                        </li>
+                        <li class="option">
+                            <input type="checkbox" name="" id="fill-color">
+                            <label for="fill-color">Fill color</label>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="row penerasor">
+                    <label for="" class="title">Options</label>
+                    <ul class="options">
+                        <li class="option brush active">
+                            <img src="brush.png" style="width:21px; rotate:12deg;" alt=".">
+                            <span>Brush</span>
+                        </li>
+                        <li class="option erasor ">
+                            <img src="eraser.svg" style="width:18px;" alt=".">
+                            <span>Eraser</span>
+                        </li>
+                
+                        <li class="option">
+                            <input type="range" name="" id="size-slider">
+                         </li>
+                    </ul>
+                </div>
+
+                <div class="row colors">
+                    <label for="" class="title">Colors</label>
+                    <ul class="options">
+                        <li class="option" id="white"></li>
+                        <li class="option selected" id="black"></li>
+                        <li class="option" id="red"></li>
+                        <li class="option" id="green"></li>
+                        <li class="option" id="blue">
+                            <!-- <input type="color" name="" id=""> -->
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="row buttons">
+                   <button class="clear-canvas">Clear Canvas</button>
+                   <button class="save-img">Save as image</button>
+
+                </div>
+
+
+
+
+
+            </section>
+            
+        </div>
+    </div>
+   
+
+</div>
+    
+    
+</body>
+
+
+
+<script  src="http://localhost:8000/socket.io/socket.io.js"></script>
+<!-- <script  src="https://socket-io-server-lilac.vercel.app/socket.io/socket.io.js"></script> -->
+<script src="client.js"></script>
+<script src="client2.js"></script>
+
+</html>
