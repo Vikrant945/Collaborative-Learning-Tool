@@ -1,5 +1,5 @@
-// const socket =io('https://socket-io-server-lilac.vercel.app');
-const socket =io('http://localhost:8000/');
+const socket =io('https://socket-io-server-lilac.vercel.app');
+// const socket =io('http://localhost:8000/');
 
 
 
