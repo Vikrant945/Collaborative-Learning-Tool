@@ -225,7 +225,7 @@ const canvasRect = canvas.getBoundingClientRect();
     } 
     else {
         // Default left property for larger screens
-        leftValue = `${canvasRect.left + position.x - 265}px`;
+        leftValue = `${canvasRect.left + position.x - 285}px`;
     }
     namebox.style.left = leftValue;
 
