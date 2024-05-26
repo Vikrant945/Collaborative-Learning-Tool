@@ -210,8 +210,24 @@ const canvasRect = canvas.getBoundingClientRect();
 
 // Set absolute positioning
     namebox.style.position = "absolute";
-    namebox.style.left = `${canvasRect.left + position.x +160}px`;
     namebox.style.top = `${canvasRect.top + position.y +45}px`;
+
+    let leftValue;
+
+    if (window.matchMedia("(max-width: 1276px)").matches) {
+        // Adjust left property for smaller screens
+        leftValue = `${canvasRect.left + position.x - 245}px`; // Adjust this value according to your requirements
+    } 
+    
+    else if (window.matchMedia("(max-width: 1225px)").matches) {
+        // Adjust left property for smaller screens
+        leftValue = `${canvasRect.left + position.x - 235}px`; // Adjust this value according to your requirements
+    } 
+    else {
+        // Default left property for larger screens
+        leftValue = `${canvasRect.left + position.x - 265}px`;
+    }
+    namebox.style.left = leftValue;
 
     
 
