@@ -1,5 +1,15 @@
-const socket =io('https://socket-io-server-lilac.vercel.app');
-// const socket =io('http://localhost:8000/');
+// const socket =io('https://socket-io-server-lilac.vercel.app', {
+//   transports: ['websocket', 'polling']
+// });
+
+const socket =io('https://socket-io-server-vmy8.onrender.com/', {
+  transports: ['websocket', 'polling']
+});
+
+
+// const socket =io('http://localhost:8000/', {
+//   transports: ['websocket', 'polling']
+// });
 
 
 
