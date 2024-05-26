@@ -165,7 +165,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
 
 
+    let namebox = null;
 
+    // Get the canvas position relative to the document
+const canvasRect = canvas.getBoundingClientRect();
 
 
 //if someone else draws
@@ -179,10 +182,43 @@ document.addEventListener('DOMContentLoaded', (event) => {
         ctx.stroke();
         ctx.beginPath();
         ctx.moveTo(position.x, position.y);
-        
 
 
       
+
+
+        // Remove the previous namebox if it exists
+    if (namebox) {
+        namebox.remove();
+    }
+        
+    let hiname=position.user;
+    const textWidth = hiname.length * 8;
+    const boxWidth = textWidth+20;
+
+
+        namebox = document.createElement("div");
+        namebox.classList.add("namebox");
+        namebox.innerText=hiname;
+        namebox.style.height="24px";
+        namebox.style.width=`${boxWidth}px`;
+        namebox.style.padding="2px";
+        namebox.style.textAlign="center";
+        namebox.style.border=`1px solid ${position.penColor}`;
+        namebox.style.color=`${position.penColor}`;
+
+
+// Set absolute positioning
+    namebox.style.position = "absolute";
+    namebox.style.left = `${canvasRect.left + position.x +160}px`;
+    namebox.style.top = `${canvasRect.top + position.y +45}px`;
+
+    
+
+  
+
+    // Append the namebox to a container or the body
+    document.body.appendChild(namebox);
 
         
     })
@@ -191,9 +227,12 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
     socket.on("ondown", position =>{
         ctx.moveTo(position.x, position.y);
+        
     })
 
     socket.on("other-start-path", message=>{
+        namebox.remove();
+
         ctx.beginPath();
         
     })
