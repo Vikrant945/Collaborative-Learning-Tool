@@ -216,16 +216,16 @@ const canvasRect = canvas.getBoundingClientRect();
 
     if (window.matchMedia("(max-width: 1276px)").matches) {
         // Adjust left property for smaller screens
-        leftValue = `${canvasRect.left + position.x - 255}px`; // Adjust this value according to your requirements
+        leftValue = `${canvasRect.left + position.x - 245}px`; // Adjust this value according to your requirements
     } 
     
     else if (window.matchMedia("(max-width: 1225px)").matches) {
         // Adjust left property for smaller screens
-        leftValue = `${canvasRect.left + position.x - 245}px`; // Adjust this value according to your requirements
+        leftValue = `${canvasRect.left + position.x - 235}px`; // Adjust this value according to your requirements
     } 
     else {
         // Default left property for larger screens
-        leftValue = `${canvasRect.left + position.x - 285}px`;
+        leftValue = `${canvasRect.left + position.x - 265}px`;
     }
     namebox.style.left = leftValue;
 
