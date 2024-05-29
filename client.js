@@ -21,9 +21,13 @@ const app= document.querySelector(".app");
 
 let messagebox =app.querySelector(".chat-screen  #message-input");
 
+const drawingBoard= document.querySelector(".drawing-board");
+
 const canvasContainer=document.querySelector(".canvas-container")
 let  toolsContainer=document.querySelector(".tools-container");
 app.querySelector(".join-screen  #join-user").addEventListener("click" ,()=>{
+
+    drawingBoard.classList.remove("hidden");
 
     let username=app.querySelector(".join-screen  #username").value;
     if(username.length<=0 )
@@ -41,6 +45,7 @@ app.querySelector(".join-screen  #join-user").addEventListener("click" ,()=>{
 
     // canvasContainer.classList.remove("inactive");
     toolsContainer.classList.remove("inactive");
+   
 
 
 
