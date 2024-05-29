@@ -214,7 +214,7 @@ const canvasRect = canvas.getBoundingClientRect();
 
 // Set absolute positioning
     namebox.style.position = "absolute";
-    namebox.style.top = `${canvasRect.top + position.y +45}px`;
+    namebox.style.top = `${canvasRect.top + position.y -26}px`;
 
     let leftValue;
 
