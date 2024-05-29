@@ -100,6 +100,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
     function draw(e) {
         if (!drawing) return;
+        if(sizeSlider.value==0)
+        {
+            sizeSlider.value=1;
+        }
 
         ctx.lineWidth = sizeSlider.value; // You can adjust the stroke width here
         ctx.lineCap = 'round';
