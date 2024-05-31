@@ -51,19 +51,20 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    let isDrawingLocally = false;
+    let isDrawingRemotely = false;
 
     // Drawing functions
     function startPosition(e) {
-        isDrawingLocally = true;
+        if(!isDrawingRemotely)
+        {
         drawing = true;
         socket.emit("down", { x: e.clientX - canvas.offsetLeft, y: e.clientY - canvas.offsetTop });
         draw(e);
+        }
     }
 
     function endPosition() {
         drawing = false;
-        isDrawingLocally = false;
         socket.emit("my-start-path", "mouseup");
         ctx.beginPath();
     }
@@ -119,21 +120,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Socket.IO event listeners
     socket.on("other-draw", position => {
-        if (!isDrawingLocally) {
+        isDrawingRemotely=true;
             handleRemoteDrawing(position);
-        }
+        
     });
 
     socket.on("ondown", position => {
-        if (!isDrawingLocally) {
+        isDrawingRemotely=true;
+       
             handleRemoteStart(position);
-        }
+        
     });
 
     socket.on("other-start-path", () => {
-        if (!isDrawingLocally) {
+        isDrawingRemotely=false;
+       
             handleRemoteEnd();
-        }
+        
     });
 
     // Separate functions for handling remote drawing
@@ -178,9 +181,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (window.matchMedia("(max-width: 1276px)").matches) {
             namebox.style.left = `${canvasRect.left + position.x - 15}px`;
         } else if (window.matchMedia("(max-width: 1225px)").matches) {
-            namebox.style.left = `${canvasRect.left + position.x -10 }px`;
+            namebox.style.left = `${canvasRect.left + position.x - 10}px`;
         }
-        
 
         document.body.appendChild(namebox);
     }
