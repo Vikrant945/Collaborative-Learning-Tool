@@ -1,122 +1,84 @@
-document.addEventListener('DOMContentLoaded', (event) => {
+document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
     let drawing = false;
-    let penColor="black";
-
-    let erazorColor="#fafafa";
+    let penColor = "black";
+    const erazorColor = "#fafafa";
     const sizeSlider = document.getElementById('size-slider');
-    let erazor= document.querySelector(".erasor");
-    let brush = document.querySelector(".brush");
+    const erazor = document.querySelector(".erasor");
+    const brush = document.querySelector(".brush");
+    const colors = document.querySelectorAll(".colors .option");
+    let namebox = null;
 
-   
-    sizeSlider.value=4;
-  
-
-
-
-    let colors=document.querySelectorAll(".colors .option")
-   
-
-    for( let color of colors){
-
-       
-       
-        color.addEventListener("click",()=>{
-            erazor.classList.remove("active");
-            penColor=`${color.id}`;
-            for( let color of colors)
-            {
-                if(color.classList.contains("selected"))
-                 {
-                 color.classList.remove("selected")
-                  }
-                
-            }
-            color.classList.add("selected")
-
-
-            if(sizeSlider.value < 2 )
-            {
-                sizeSlider.value =2;
-        
-            }
-
-        })
-
-    
-
-
-    }
-
-
-
-    erazor.addEventListener("click",()=>{
-        // console.log("clicked erazor");
-        brush.classList.remove("active");
-
-        erazor.classList.add("active");
-        penColor=erazorColor;
-
-    })
-
-    brush.addEventListener("click",()=>{
-        brush.classList.add("active");
-
-        erazor.classList.remove("active");
-        for(let color  of colors)
-        {
-            if(color.classList.contains("selected"))
-            {
-                penColor=`${color.id}`;
-            
-             }
-
-        }
-
-    })
-
-
-   
+    sizeSlider.value = 4;
     ctx.lineWidth = sizeSlider.value;
 
     // Resize the canvas to fill its container
-    canvas.width = canvas.parentElement.clientWidth;
-    canvas.height = canvas.parentElement.clientHeight;
+    function resizeCanvas() {
+        canvas.width = canvas.parentElement.clientWidth;
+        canvas.height = canvas.parentElement.clientHeight;
+    }
 
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    // Color selection event listeners
+    colors.forEach(color => {
+        color.addEventListener("click", () => {
+            erazor.classList.remove("active");
+            penColor = color.id;
+            colors.forEach(c => c.classList.remove("selected"));
+            color.classList.add("selected");
+            if (sizeSlider.value < 2) sizeSlider.value = 2;
+        });
+    });
+
+    // Eraser event listener
+    erazor.addEventListener("click", () => {
+        brush.classList.remove("active");
+        erazor.classList.add("active");
+        penColor = erazorColor;
+    });
+
+    // Brush event listener
+    brush.addEventListener("click", () => {
+        brush.classList.add("active");
+        erazor.classList.remove("active");
+        colors.forEach(color => {
+            if (color.classList.contains("selected")) {
+                penColor = color.id;
+            }
+        });
+    });
+
+    let isDrawingLocally = false;
+
+    // Drawing functions
     function startPosition(e) {
-   socket.emit("down", {x:e.clientX - canvas.offsetLeft ,y:e.clientY - canvas.offsetTop})
-        
+        isDrawingLocally = true;
         drawing = true;
+        socket.emit("down", { x: e.clientX - canvas.offsetLeft, y: e.clientY - canvas.offsetTop });
         draw(e);
     }
 
     function endPosition() {
-
-        socket.emit("my-start-path","mouseup");
         drawing = false;
+        isDrawingLocally = false;
+        socket.emit("my-start-path", "mouseup");
         ctx.beginPath();
     }
 
     function draw(e) {
         if (!drawing) return;
-        if(sizeSlider.value==0)
-        {
-            sizeSlider.value=1;
-        }
-
-        ctx.lineWidth = sizeSlider.value; // You can adjust the stroke width here
+        if (sizeSlider.value == 0) sizeSlider.value = 1;
+        ctx.lineWidth = sizeSlider.value;
         ctx.lineCap = 'round';
-        ctx.strokeStyle = penColor; // You can change the color here
-
+        ctx.strokeStyle = penColor;
         ctx.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
         ctx.stroke();
         ctx.beginPath();
         ctx.moveTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
-
-        socket.emit("mydraw" ,{x:e.clientX - canvas.offsetLeft ,y:e.clientY - canvas.offsetTop, lWidth:ctx.lineWidth ,penColor:penColor});
-
-
+        socket.emit("mydraw", { x: e.clientX - canvas.offsetLeft, y: e.clientY - canvas.offsetTop, lWidth: ctx.lineWidth, penColor: penColor });
     }
 
     // Event listeners for mouse actions
@@ -124,7 +86,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     canvas.addEventListener('mouseup', endPosition);
     canvas.addEventListener('mousemove', draw);
 
-    // Event listeners for touch actions (for mobile devices)
+    // Event listeners for touch actions
     canvas.addEventListener('touchstart', (e) => {
         const touch = e.touches[0];
         const mouseEvent = new MouseEvent('mousedown', {
@@ -149,118 +111,77 @@ document.addEventListener('DOMContentLoaded', (event) => {
     });
 
     // Prevent scrolling when touching the canvas
-    canvas.addEventListener('touchstart', (e) => {
-        if (e.target === canvas) {
-            e.preventDefault();
+    ['touchstart', 'touchend', 'touchmove'].forEach(event => {
+        canvas.addEventListener(event, (e) => {
+            if (e.target === canvas) e.preventDefault();
+        }, { passive: false });
+    });
+
+    // Socket.IO event listeners
+    socket.on("other-draw", position => {
+        if (!isDrawingLocally) {
+            handleRemoteDrawing(position);
         }
-    }, { passive: false });
+    });
 
-    canvas.addEventListener('touchend', (e) => {
-        if (e.target === canvas) {
-            e.preventDefault();
+    socket.on("ondown", position => {
+        if (!isDrawingLocally) {
+            handleRemoteStart(position);
         }
-    }, { passive: false });
+    });
 
-    canvas.addEventListener('touchmove', (e) => {
-        if (e.target === canvas) {
-            e.preventDefault();
+    socket.on("other-start-path", () => {
+        if (!isDrawingLocally) {
+            handleRemoteEnd();
         }
-    }, { passive: false });
+    });
 
+    // Separate functions for handling remote drawing
+    function handleRemoteStart(position) {
+        ctx.beginPath();
+        ctx.moveTo(position.x, position.y);
+    }
 
-
-    let namebox = null;
-
-    // Get the canvas position relative to the document
-const canvasRect = canvas.getBoundingClientRect();
-
-
-//if someone else draws
-    socket.on("other-draw", position =>{
-
-        ctx.lineWidth = position.lWidth; // You can adjust the stroke width here
+    function handleRemoteDrawing(position) {
+        ctx.lineWidth = position.lWidth;
         ctx.lineCap = 'round';
-        ctx.strokeStyle = position.penColor; // You can change the color here
-
+        ctx.strokeStyle = position.penColor;
         ctx.lineTo(position.x, position.y);
         ctx.stroke();
         ctx.beginPath();
         ctx.moveTo(position.x, position.y);
-
-
-      
-
-
-        // Remove the previous namebox if it exists
-    if (namebox) {
-        namebox.remove();
+        showNameBox(position);
     }
-        
-    let hiname=position.user;
-    const textWidth = hiname.length * 8;
-    const boxWidth = textWidth+20;
 
+    function handleRemoteEnd() {
+        ctx.beginPath();
+        if (namebox) namebox.remove();
+    }
 
+    // Function to show the name box
+    function showNameBox(position) {
+        if (namebox) namebox.remove();
+        const canvasRect = canvas.getBoundingClientRect();
         namebox = document.createElement("div");
         namebox.classList.add("namebox");
-        namebox.innerText=hiname;
-        namebox.style.height="24px";
-        namebox.style.width=`${boxWidth}px`;
-        namebox.style.padding="2px";
-        namebox.style.textAlign="center";
-        namebox.style.border=`1px solid ${position.penColor}`;
-        namebox.style.color=`${position.penColor}`;
+        namebox.innerText = position.user;
+        namebox.style.height = "24px";
+        namebox.style.width = `${(position.user.length * 8) + 20}px`;
+        namebox.style.padding = "2px";
+        namebox.style.textAlign = "center";
+        namebox.style.border = `1px solid ${position.penColor}`;
+        namebox.style.color = `${position.penColor}`;
+        namebox.style.position = "absolute";
+        namebox.style.top = `${canvasRect.top + position.y - 26}px`;
+        namebox.style.left = `${canvasRect.left + position.x - 19}px`;
 
+        if (window.matchMedia("(max-width: 1276px)").matches) {
+            namebox.style.left = `${canvasRect.left + position.x - 15}px`;
+        } else if (window.matchMedia("(max-width: 1225px)").matches) {
+            namebox.style.left = `${canvasRect.left + position.x -10 }px`;
+        }
+        
 
-// Set absolute positioning
-    namebox.style.position = "absolute";
-    namebox.style.top = `${canvasRect.top + position.y -26}px`;
-
-    let leftValue;
-
-    if (window.matchMedia("(max-width: 1276px)").matches) {
-        // Adjust left property for smaller screens
-        leftValue = `${canvasRect.left + position.x - 255}px`; // Adjust this value according to your requirements
-    } 
-    
-    else if (window.matchMedia("(max-width: 1225px)").matches) {
-        // Adjust left property for smaller screens
-        leftValue = `${canvasRect.left + position.x - 235}px`; // Adjust this value according to your requirements
-    } 
-    else {
-        // Default left property for larger screens
-        leftValue = `${canvasRect.left + position.x - 319}px`;
+        document.body.appendChild(namebox);
     }
-    namebox.style.left = leftValue;
-
-    
-
-  
-
-    // Append the namebox to a container or the body
-    document.body.appendChild(namebox);
-
-        
-    })
-
-
-
-    socket.on("ondown", position =>{
-        ctx.moveTo(position.x, position.y);
-        
-    })
-
-    socket.on("other-start-path", message=>{
-        namebox.remove();
-
-        ctx.beginPath();
-        
-    })
-
-
-
-    // let remoteDrawingTimeout;
-
-
-
 });
